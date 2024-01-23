@@ -53,7 +53,10 @@ arp_spoof = { }
 back_orifice = { }
 dns = { }
 imap = { }
-netflow = {}
+netflow = { dump_file='test_flows.txt'}
+
+
+
 normalizer = { }
 pop = { }
 rpc_decode = { }
@@ -87,6 +90,8 @@ ftp_data = { }
 http_inspect = { }
 http2_inspect = { }
 
+appid_listener = {anomaly_detection=true, json_logging=true, file='flows.json' }
+
 -- see file_magic.rules for file id rules
 file_id = { rules_file = 'file_magic.rules' }
 file_policy = { }
@@ -98,7 +103,7 @@ js_norm = default_js_norm
 appid =
 {
     -- appid requires this to use appids in rules
-    --app_detector_dir = 'directory to load appid detectors from'
+    app_detector_dir = './'
 }
 
 --[[
@@ -127,12 +132,13 @@ binder =
     { when = { proto = 'tcp', ports = '502', role='server' }, use = { type = 'modbus' } },
     { when = { proto = 'tcp', ports = '2123 2152 3386', role='server' }, use = { type = 'gtp_inspect' } },
     { when = { proto = 'tcp', ports = '2404', role='server' }, use = { type = 'iec104' } },
-    { when = { proto = 'udp', ports = '2222', role = 'server' }, use = { type = 'cip' } },
+    { when = { proto = 'udp', ports = '22222', role = 'server' }, use = { type = 'cip' } },
     { when = { proto = 'tcp', ports = '44818', role = 'server' }, use = { type = 'cip' } },
 
     { when = { proto = 'tcp', service = 'dcerpc' },  use = { type = 'dce_tcp' } },
     { when = { proto = 'udp', service = 'dcerpc' },  use = { type = 'dce_udp' } },
     { when = { proto = 'udp', service = 'netflow' }, use = { type = 'netflow' } },
+
 
     { when = { service = 'netbios-ssn' },      use = { type = 'dce_smb' } },
     { when = { service = 'dce_http_server' },  use = { type = 'dce_http_server' } },
@@ -249,9 +255,10 @@ rate_filter =
 -- event logging
 -- you can enable with defaults from the command line with -A <alert_type>
 -- uncomment below to set non-default configs
---alert_csv = { }
---alert_fast = { }
---alert_full = { }
+alert_csv = {file=true }
+--alert_fast = {file=true }
+alert_full = {file=true }
+alert_json = {file=true}
 --alert_sfsocket = { }
 --alert_syslog = { }
 --unified2 = { }
@@ -273,4 +280,3 @@ rate_filter =
 if ( tweaks ~= nil ) then
     include(tweaks .. '.lua')
 end
-

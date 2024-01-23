@@ -58,7 +58,16 @@ namespace snort
 void LogTimeStamp(TextLog* log, Packet* p)
 {
     char timestamp[TIMEBUF_SIZE];
-    ts_print((const struct timeval*)&p->pkth->ts, timestamp);
+    struct tm* timeinfo;
+
+    // Převod timestampu na strukturu tm
+    timeinfo = localtime((const time_t*)&p->pkth->ts.tv_sec);
+
+    // Formátování timestampu do požadovaného formátu
+    strftime(timestamp, TIMEBUF_SIZE, "%Y-%m-%dT%H:%M:%S", timeinfo);
+    // Přidání milisekund
+    sprintf(timestamp + strlen(timestamp), ".%06ldZ", p->pkth->ts.tv_usec);
+
     TextLog_Puts(log, timestamp);
 }
 
